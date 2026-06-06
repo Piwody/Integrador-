@@ -1,0 +1,29 @@
+version: '3.8'
+
+services:
+  auth-service:
+    build:
+      context: ./auth-service
+      dockerfile: Dockerfile
+    ports:
+      
+      - "8081:8000"
+    environment:
+      - DB_PATH=/app/data/auth.db
+    volumes:
+      - auth_data:/app/data
+
+  image-service:
+    build:
+      context: ./image-service
+      dockerfile: Dockerfile
+    ports:
+      
+      - "8082:5000"
+    volumes:
+      - image_data:/app/root/uploads
+
+volumes:
+  auth_data:
+  image_data:
+
