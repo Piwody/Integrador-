@@ -1,0 +1,707 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>~~*~~ FOTO ZONE 2000 ~~*~~</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=VT323&family=Press+Start+2P&display=swap');
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #000080;
+    --bg2: #000040;
+    --cyan: #00FFFF;
+    --yellow: #FFFF00;
+    --magenta: #FF00FF;
+    --green: #00FF00;
+    --white: #FFFFFF;
+    --gray: #C0C0C0;
+    --dark: #808080;
+    --red: #FF0000;
+    --win-bg: #C0C0C0;
+    --win-title: #000080;
+    --win-title-text: #FFFFFF;
+    --win-border-light: #FFFFFF;
+    --win-border-dark: #808080;
+    --win-border-darker: #404040;
+  }
+
+  body {
+    background: var(--bg);
+    font-family: 'VT323', monospace;
+    min-height: 100vh;
+    overflow-x: hidden;
+    cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16'%3E%3Cpolygon points='0,0 0,12 4,8 7,14 9,13 6,7 10,7' fill='white' stroke='black' stroke-width='1'/%3E%3C/svg%3E"), auto;
+  }
+
+  /* Marquee top banner */
+  .banner {
+    background: var(--bg2);
+    border-bottom: 2px solid var(--cyan);
+    border-top: 2px solid var(--cyan);
+    padding: 4px 0;
+    overflow: hidden;
+    white-space: nowrap;
+  }
+  .banner-inner {
+    display: inline-block;
+    animation: marquee 18s linear infinite;
+    color: var(--yellow);
+    font-size: 18px;
+    letter-spacing: 2px;
+  }
+  @keyframes marquee { from { transform: translateX(100vw); } to { transform: translateX(-100%); } }
+
+  /* Stars background */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image:
+      radial-gradient(1px 1px at 10% 15%, white 0%, transparent 100%),
+      radial-gradient(1px 1px at 30% 40%, white 0%, transparent 100%),
+      radial-gradient(1px 1px at 55% 20%, white 0%, transparent 100%),
+      radial-gradient(1px 1px at 75% 60%, white 0%, transparent 100%),
+      radial-gradient(1px 1px at 90% 10%, white 0%, transparent 100%),
+      radial-gradient(1px 1px at 20% 80%, white 0%, transparent 100%),
+      radial-gradient(1px 1px at 65% 85%, white 0%, transparent 100%),
+      radial-gradient(1px 1px at 45% 70%, white 0%, transparent 100%),
+      radial-gradient(2px 2px at 85% 35%, cyan 0%, transparent 100%),
+      radial-gradient(2px 2px at 15% 55%, magenta 0%, transparent 100%);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .page {
+    position: relative;
+    z-index: 1;
+    max-width: 700px;
+    margin: 0 auto;
+    padding: 16px;
+  }
+
+  /* Main title */
+  .site-title {
+    text-align: center;
+    padding: 20px 0 10px;
+    animation: flicker 3s infinite;
+  }
+  .site-title h1 {
+    font-family: 'Press Start 2P', monospace;
+    font-size: 22px;
+    color: var(--cyan);
+    text-shadow: 3px 3px var(--magenta), -1px -1px var(--yellow);
+    line-height: 1.6;
+  }
+  .site-title .sub {
+    font-size: 20px;
+    color: var(--yellow);
+    margin-top: 6px;
+    letter-spacing: 4px;
+  }
+  @keyframes flicker {
+    0%,96%,100% { opacity: 1; }
+    97% { opacity: 0.7; }
+    98% { opacity: 1; }
+    99% { opacity: 0.5; }
+  }
+
+  /* Windows 95 style window */
+  .win {
+    background: var(--win-bg);
+    border: 2px solid;
+    border-color: var(--win-border-light) var(--win-border-darker) var(--win-border-darker) var(--win-border-light);
+    margin-bottom: 16px;
+  }
+  .win-titlebar {
+    background: var(--win-title);
+    padding: 4px 8px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    cursor: default;
+  }
+  .win-titlebar span {
+    color: var(--win-title-text);
+    font-family: 'Press Start 2P', monospace;
+    font-size: 9px;
+    letter-spacing: 0;
+  }
+  .win-controls {
+    display: flex;
+    gap: 2px;
+  }
+  .win-btn {
+    width: 16px;
+    height: 14px;
+    background: var(--win-bg);
+    border: 1px solid;
+    border-color: var(--win-border-light) var(--win-border-darker) var(--win-border-darker) var(--win-border-light);
+    font-size: 9px;
+    line-height: 1;
+    text-align: center;
+    cursor: pointer;
+    color: #000;
+    font-family: 'VT323', monospace;
+  }
+  .win-content { padding: 16px; }
+
+  /* Tabs */
+  .tabs {
+    display: flex;
+    border-bottom: 2px solid var(--win-border-dark);
+    margin-bottom: 16px;
+  }
+  .tab {
+    padding: 6px 16px;
+    background: var(--dark);
+    border: 2px solid;
+    border-color: var(--win-border-light) var(--win-border-dark) transparent var(--win-border-light);
+    border-bottom: none;
+    cursor: pointer;
+    font-family: 'Press Start 2P', monospace;
+    font-size: 8px;
+    color: #000;
+    margin-right: 2px;
+    position: relative;
+    top: 2px;
+  }
+  .tab.active {
+    background: var(--win-bg);
+    z-index: 1;
+    color: #000;
+  }
+
+  /* Form fields */
+  .field { margin-bottom: 12px; }
+  .field label {
+    display: block;
+    font-size: 18px;
+    color: #000;
+    margin-bottom: 4px;
+    font-family: 'Press Start 2P', monospace;
+    font-size: 9px;
+  }
+  .field input[type="text"],
+  .field input[type="password"] {
+    width: 100%;
+    background: #fff;
+    border: 2px solid;
+    border-color: var(--win-border-dark) var(--win-border-light) var(--win-border-light) var(--win-border-dark);
+    padding: 6px 8px;
+    font-family: 'VT323', monospace;
+    font-size: 20px;
+    color: #000;
+    outline: none;
+  }
+  .field input:focus {
+    border-color: var(--win-title);
+  }
+
+  /* Buttons */
+  .retro-btn {
+    background: var(--win-bg);
+    border: 2px solid;
+    border-color: var(--win-border-light) var(--win-border-darker) var(--win-border-darker) var(--win-border-light);
+    padding: 8px 24px;
+    font-family: 'Press Start 2P', monospace;
+    font-size: 9px;
+    cursor: pointer;
+    color: #000;
+    transition: none;
+  }
+  .retro-btn:active {
+    border-color: var(--win-border-darker) var(--win-border-light) var(--win-border-light) var(--win-border-darker);
+    padding: 9px 23px 7px 25px;
+  }
+  .retro-btn.primary {
+    background: var(--win-title);
+    color: var(--white);
+  }
+
+  /* Upload zone */
+  .upload-zone {
+    border: 3px dashed var(--win-border-dark);
+    padding: 32px;
+    text-align: center;
+    background: #fff;
+    cursor: pointer;
+    transition: background 0.1s;
+  }
+  .upload-zone:hover { background: #e0e0e0; }
+  .upload-zone.dragover { background: #d0d0ff; border-color: var(--win-title); }
+  .upload-zone .icon {
+    font-size: 48px;
+    display: block;
+    margin-bottom: 8px;
+  }
+  .upload-zone p {
+    font-family: 'Press Start 2P', monospace;
+    font-size: 8px;
+    color: #000;
+    line-height: 1.8;
+  }
+  .upload-zone input[type="file"] { display: none; }
+
+  /* Status / alerts */
+  .status-bar {
+    background: var(--win-bg);
+    border-top: 2px solid var(--win-border-dark);
+    padding: 4px 8px;
+    font-size: 16px;
+    color: #000;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .status-dot {
+    width: 10px; height: 10px;
+    border-radius: 0;
+    display: inline-block;
+    background: var(--dark);
+  }
+  .status-dot.ok { background: #00aa00; }
+  .status-dot.err { background: var(--red); }
+
+  .alert {
+    padding: 8px 12px;
+    border: 2px solid;
+    font-size: 16px;
+    margin: 10px 0;
+    font-family: 'VT323', monospace;
+  }
+  .alert.success {
+    border-color: #00aa00;
+    background: #d0ffd0;
+    color: #004400;
+  }
+  .alert.error {
+    border-color: var(--red);
+    background: #ffd0d0;
+    color: #880000;
+  }
+  .alert.info {
+    border-color: var(--win-title);
+    background: #d0d0ff;
+    color: #000080;
+  }
+
+  /* Gallery */
+  .gallery-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+    gap: 8px;
+    margin-top: 12px;
+  }
+  .gallery-item {
+    background: #fff;
+    border: 2px solid;
+    border-color: var(--win-border-light) var(--win-border-darker) var(--win-border-darker) var(--win-border-light);
+    padding: 4px;
+    text-align: center;
+  }
+  .gallery-item .thumb {
+    width: 100%;
+    height: 80px;
+    object-fit: cover;
+    display: block;
+    background: #ddd;
+  }
+  .gallery-item .fname {
+    font-size: 11px;
+    color: #000;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    margin-top: 4px;
+  }
+
+  /* Divider */
+  .divider {
+    border: none;
+    border-top: 2px solid var(--win-border-dark);
+    border-bottom: 1px solid var(--win-border-light);
+    margin: 12px 0;
+  }
+
+  /* Progress bar */
+  .progress-wrap {
+    background: #fff;
+    border: 2px solid;
+    border-color: var(--win-border-dark) var(--win-border-light) var(--win-border-light) var(--win-border-dark);
+    height: 20px;
+    margin: 8px 0;
+    overflow: hidden;
+  }
+  .progress-bar {
+    height: 100%;
+    background: var(--win-title);
+    width: 0%;
+    transition: width 0.3s;
+    background-image: repeating-linear-gradient(
+      90deg, transparent, transparent 4px, rgba(255,255,255,0.2) 4px, rgba(255,255,255,0.2) 8px
+    );
+  }
+
+  .hidden { display: none !important; }
+
+  /* Footer */
+  .footer {
+    text-align: center;
+    padding: 16px 0;
+    color: var(--cyan);
+    font-size: 16px;
+    letter-spacing: 2px;
+  }
+  .blink { animation: blink 1s step-end infinite; }
+  @keyframes blink { 50% { opacity: 0; } }
+
+  /* Taskbar */
+  .taskbar {
+    background: var(--win-bg);
+    border-top: 2px solid var(--win-border-light);
+    padding: 4px 8px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 8px;
+  }
+  .taskbar-start {
+    background: var(--win-bg);
+    border: 2px solid;
+    border-color: var(--win-border-light) var(--win-border-darker) var(--win-border-darker) var(--win-border-light);
+    padding: 4px 10px;
+    font-family: 'Press Start 2P', monospace;
+    font-size: 8px;
+    cursor: pointer;
+  }
+  .taskbar-clock {
+    margin-left: auto;
+    border: 2px solid;
+    border-color: var(--win-border-dark) var(--win-border-light) var(--win-border-light) var(--win-border-dark);
+    padding: 4px 10px;
+    font-size: 16px;
+    color: #000;
+  }
+  .visitor-counter {
+    text-align: center;
+    color: var(--green);
+    font-size: 16px;
+    margin: 4px 0;
+    letter-spacing: 2px;
+  }
+</style>
+</head>
+<body>
+
+<div class="banner">
+  <span class="banner-inner">
+    ★彡 BIENVENIDO A FOTO ZONE 2000 彡★ &nbsp;&nbsp;&nbsp; ~~~ SUBE TUS FOTOS FAVORITAS ~~~ &nbsp;&nbsp;&nbsp; ✦ EL MEJOR GESTOR DE IMAGENES DE LA WEB ✦ &nbsp;&nbsp;&nbsp; *** REGISTRATE YA *** &nbsp;&nbsp;&nbsp; ★彡 BIENVENIDO A FOTO ZONE 2000 彡★ &nbsp;&nbsp;&nbsp; ~~~ SUBE TUS FOTOS FAVORITAS ~~~ &nbsp;&nbsp;&nbsp;
+  </span>
+</div>
+
+<div class="page">
+
+  <div class="site-title">
+    <h1>~~*~~ FOTO ZONE 2000 ~~*~~</h1>
+    <div class="sub">★ GESTOR DE IMAGENES ★</div>
+  </div>
+
+  <div class="visitor-counter">
+    [VISITAS: <span id="visit-count">001337</span>] &nbsp; <span class="blink">■</span> ONLINE <span class="blink">■</span>
+  </div>
+
+  <!-- AUTH WINDOW -->
+  <div class="win" id="auth-window">
+    <div class="win-titlebar">
+      <span>📁 ACCESO AL SISTEMA - FOTO ZONE 2000</span>
+      <div class="win-controls">
+        <div class="win-btn">_</div>
+        <div class="win-btn">□</div>
+        <div class="win-btn">✕</div>
+      </div>
+    </div>
+    <div class="win-content">
+      <div class="tabs">
+        <div class="tab active" id="tab-login" onclick="switchTab('login')">ENTRAR</div>
+        <div class="tab" id="tab-register" onclick="switchTab('register')">REGISTRO</div>
+      </div>
+
+      <div id="panel-login">
+        <div class="field">
+          <label>USUARIO:</label>
+          <input type="text" id="login-user" placeholder="escribe tu usuario..." />
+        </div>
+        <div class="field">
+          <label>CONTRASEÑA:</label>
+          <input type="password" id="login-pass" placeholder="••••••••" />
+        </div>
+        <div id="login-msg"></div>
+        <hr class="divider">
+        <div style="display:flex; gap:8px; justify-content:flex-end;">
+          <button class="retro-btn primary" onclick="doLogin()">► ENTRAR</button>
+        </div>
+      </div>
+
+      <div id="panel-register" class="hidden">
+        <div class="field">
+          <label>NUEVO USUARIO:</label>
+          <input type="text" id="reg-user" placeholder="elige un nombre..." />
+        </div>
+        <div class="field">
+          <label>CONTRASEÑA:</label>
+          <input type="password" id="reg-pass" placeholder="••••••••" />
+        </div>
+        <div id="reg-msg"></div>
+        <hr class="divider">
+        <div style="display:flex; gap:8px; justify-content:flex-end;">
+          <button class="retro-btn primary" onclick="doRegister()">► REGISTRARSE</button>
+        </div>
+      </div>
+    </div>
+    <div class="status-bar">
+      <span class="status-dot" id="conn-dot"></span>
+      <span id="conn-label">Desconectado</span>
+    </div>
+  </div>
+
+  <!-- UPLOAD WINDOW -->
+  <div class="win hidden" id="upload-window">
+    <div class="win-titlebar">
+      <span>🖼️ SUBIR IMAGEN - FOTO ZONE 2000</span>
+      <div class="win-controls">
+        <div class="win-btn">_</div>
+        <div class="win-btn">□</div>
+        <div class="win-btn" onclick="doLogout()">✕</div>
+      </div>
+    </div>
+    <div class="win-content">
+      <div class="alert info" style="margin-bottom:12px;">
+        ✦ SESION ACTIVA: <strong id="logged-user"></strong> &nbsp;|&nbsp; TOKEN VALIDO 30 MIN
+      </div>
+
+      <label class="upload-zone" id="drop-zone" for="file-input">
+        <span class="icon">📂</span>
+        <p>HAZ CLICK AQUI O ARRASTRA TU IMAGEN<br><br>JPG · PNG · GIF · WEBP · MAX 10MB</p>
+        <input type="file" id="file-input" accept=".jpg,.jpeg,.png,.gif,.webp" onchange="handleFile(this.files[0])">
+      </label>
+
+      <div id="file-info" class="hidden" style="margin-top:10px; font-size:17px; color:#000;">
+        ARCHIVO: <strong id="file-name"></strong> (<span id="file-size"></span>)
+      </div>
+
+      <div class="progress-wrap hidden" id="progress-wrap">
+        <div class="progress-bar" id="progress-bar"></div>
+      </div>
+
+      <div id="upload-msg"></div>
+
+      <hr class="divider">
+      <div style="display:flex; gap:8px; justify-content:space-between; align-items:center;">
+        <button class="retro-btn" onclick="doLogout()">◄ SALIR</button>
+        <button class="retro-btn primary" onclick="doUpload()" id="upload-btn" disabled>▲ SUBIR IMAGEN</button>
+      </div>
+
+      <!-- Gallery -->
+      <div id="gallery-section" class="hidden">
+        <hr class="divider">
+        <div style="font-family:'Press Start 2P',monospace; font-size:9px; color:#000; margin-bottom:8px;">
+          ★ IMAGENES SUBIDAS EN ESTA SESION ★
+        </div>
+        <div class="gallery-grid" id="gallery-grid"></div>
+      </div>
+    </div>
+    <div class="status-bar">
+      <span class="status-dot ok"></span>
+      <span>Conectado al servidor · Puerto 8082</span>
+    </div>
+  </div>
+
+  <div class="footer">
+    <span class="blink">★</span> FOTO ZONE 2000 © PROYECTO INTEGRADOR 2026 <span class="blink">★</span><br>
+    <small style="font-size:13px; color:var(--gray);">Mejor visto en 800x600 · Netscape Navigator 4.0</small>
+  </div>
+
+  <div class="taskbar">
+    <button class="taskbar-start">▶ Inicio</button>
+    <span style="font-size:14px; color:#000;">📁 Foto Zone 2000</span>
+    <div class="taskbar-clock" id="clock">00:00</div>
+  </div>
+
+</div>
+
+<script>
+  const AUTH = 'http://localhost:8081';
+  const IMG  = 'http://localhost:8082';
+  let token = null;
+  let selectedFile = null;
+  const uploadedFiles = [];
+
+  function clock() {
+    const n = new Date();
+    document.getElementById('clock').textContent =
+      String(n.getHours()).padStart(2,'0') + ':' + String(n.getMinutes()).padStart(2,'0');
+  }
+  clock(); setInterval(clock, 10000);
+
+  let visits = 1337;
+  setInterval(() => {
+    visits += Math.floor(Math.random()*3);
+    document.getElementById('visit-count').textContent = String(visits).padStart(6,'0');
+  }, 8000);
+
+  function switchTab(tab) {
+    document.getElementById('panel-login').classList.toggle('hidden', tab !== 'login');
+    document.getElementById('panel-register').classList.toggle('hidden', tab !== 'register');
+    document.getElementById('tab-login').classList.toggle('active', tab === 'login');
+    document.getElementById('tab-register').classList.toggle('active', tab === 'register');
+  }
+
+  function showMsg(id, text, type) {
+    const el = document.getElementById(id);
+    el.innerHTML = `<div class="alert ${type}">${text}</div>`;
+  }
+
+  async function doRegister() {
+    const u = document.getElementById('reg-user').value.trim();
+    const p = document.getElementById('reg-pass').value.trim();
+    if (!u || !p) { showMsg('reg-msg','⚠ COMPLETA TODOS LOS CAMPOS','error'); return; }
+    showMsg('reg-msg','⏳ Registrando...','info');
+    try {
+      const r = await fetch(AUTH+'/register', {
+        method:'POST', headers:{'Content-Type':'application/json'},
+        body: JSON.stringify({username:u, password:p})
+      });
+      const d = await r.json();
+      if (r.ok) {
+        showMsg('reg-msg','✔ REGISTRO EXITOSO! Ya puedes iniciar sesion','success');
+        setTimeout(() => switchTab('login'), 1500);
+      } else {
+        showMsg('reg-msg','✖ ERROR: '+(d.detail||'Usuario ya existe'),'error');
+      }
+    } catch(e) {
+      showMsg('reg-msg','✖ No se puede conectar al servidor. ¿Está Docker corriendo?','error');
+    }
+  }
+
+  async function doLogin() {
+    const u = document.getElementById('login-user').value.trim();
+    const p = document.getElementById('login-pass').value.trim();
+    if (!u || !p) { showMsg('login-msg','⚠ COMPLETA TODOS LOS CAMPOS','error'); return; }
+    showMsg('login-msg','⏳ Verificando credenciales...','info');
+    try {
+      const r = await fetch(AUTH+'/login', {
+        method:'POST', headers:{'Content-Type':'application/json'},
+        body: JSON.stringify({username:u, password:p})
+      });
+      const d = await r.json();
+      if (r.ok) {
+        token = d.access_token;
+        document.getElementById('logged-user').textContent = u.toUpperCase();
+        document.getElementById('auth-window').classList.add('hidden');
+        document.getElementById('upload-window').classList.remove('hidden');
+        document.getElementById('conn-dot').className = 'status-dot ok';
+        document.getElementById('conn-label').textContent = 'Conectado como ' + u;
+      } else {
+        showMsg('login-msg','✖ ERROR: '+(d.detail||'Credenciales incorrectas'),'error');
+      }
+    } catch(e) {
+      showMsg('login-msg','✖ No se puede conectar al servidor. ¿Está Docker corriendo?','error');
+    }
+  }
+
+  function doLogout() {
+    token = null; selectedFile = null;
+    document.getElementById('auth-window').classList.remove('hidden');
+    document.getElementById('upload-window').classList.add('hidden');
+    document.getElementById('login-msg').innerHTML = '';
+    document.getElementById('upload-msg').innerHTML = '';
+    document.getElementById('file-info').classList.add('hidden');
+    document.getElementById('progress-wrap').classList.add('hidden');
+    document.getElementById('upload-btn').disabled = true;
+    document.getElementById('conn-dot').className = 'status-dot';
+    document.getElementById('conn-label').textContent = 'Desconectado';
+  }
+
+  function handleFile(file) {
+    if (!file) return;
+    selectedFile = file;
+    document.getElementById('file-name').textContent = file.name;
+    document.getElementById('file-size').textContent = (file.size/1024).toFixed(1)+' KB';
+    document.getElementById('file-info').classList.remove('hidden');
+    document.getElementById('upload-btn').disabled = false;
+    document.getElementById('upload-msg').innerHTML = '';
+  }
+
+  const dz = document.getElementById('drop-zone');
+  dz.addEventListener('dragover', e => { e.preventDefault(); dz.classList.add('dragover'); });
+  dz.addEventListener('dragleave', () => dz.classList.remove('dragover'));
+  dz.addEventListener('drop', e => {
+    e.preventDefault(); dz.classList.remove('dragover');
+    const f = e.dataTransfer.files[0];
+    if (f) { handleFile(f); }
+  });
+
+  async function doUpload() {
+    if (!selectedFile || !token) return;
+    const pw = document.getElementById('progress-wrap');
+    const pb = document.getElementById('progress-bar');
+    pw.classList.remove('hidden');
+    pb.style.width = '0%';
+    document.getElementById('upload-btn').disabled = true;
+    showMsg('upload-msg','⏳ Subiendo imagen...','info');
+
+    let prog = 0;
+    const tick = setInterval(() => {
+      prog = Math.min(prog + Math.random()*15, 85);
+      pb.style.width = prog + '%';
+    }, 150);
+
+    try {
+      const fd = new FormData();
+      fd.append('file', selectedFile);
+      const r = await fetch(IMG+'/api/v1/images/upload', {
+        method:'POST',
+        headers:{ 'Authorization': 'Bearer '+token },
+        body: fd
+      });
+      clearInterval(tick);
+      const d = await r.json();
+      if (r.ok) {
+        pb.style.width = '100%';
+        showMsg('upload-msg','✔ IMAGEN SUBIDA EXITOSAMENTE: '+d.filename,'success');
+        uploadedFiles.push({ name: selectedFile.name, url: URL.createObjectURL(selectedFile) });
+        renderGallery();
+        selectedFile = null;
+        document.getElementById('file-input').value = '';
+        document.getElementById('file-info').classList.add('hidden');
+        setTimeout(() => { pw.classList.add('hidden'); pb.style.width='0%'; }, 1500);
+      } else {
+        pb.style.width = '0%';
+        showMsg('upload-msg','✖ ERROR: '+(d.error||'Fallo al subir'),'error');
+        document.getElementById('upload-btn').disabled = false;
+      }
+    } catch(e) {
+      clearInterval(tick);
+      pb.style.width = '0%';
+      showMsg('upload-msg','✖ ERROR DE CONEXION con el servidor de imagenes','error');
+      document.getElementById('upload-btn').disabled = false;
+    }
+  }
+
+  function renderGallery() {
+    if (uploadedFiles.length === 0) return;
+    document.getElementById('gallery-section').classList.remove('hidden');
+    const grid = document.getElementById('gallery-grid');
+    grid.innerHTML = uploadedFiles.map(f => `
+      <div class="gallery-item">
+        <img class="thumb" src="${f.url}" alt="${f.name}">
+        <div class="fname">${f.name}</div>
+      </div>
+    `).join('');
+  }
+</script>
+</body>
+</html>

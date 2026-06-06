@@ -1,9 +1,18 @@
 from fastapi import FastAPI, HTTPException, Header
 from sqlmodel import Session, select
+from fastapi.middleware.cors import CORSMiddleware
 from app.models import engine, User, UserIn, create_db
 from app.core.seguridad import hash_password, verify_password, create_access_token, verify_token
 
 app = FastAPI(title="Autenticacion de Proyecto Integrador")
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 @app.on_event("startup")
 def on_startup():
@@ -58,3 +67,8 @@ def verify(authorization: str = Header(...)):
     if not username:
         raise HTTPException(status_code=401, detail="Token inválido o expirado")
     return {"valid": True, "username": username}
+
+    
+
+
+    
