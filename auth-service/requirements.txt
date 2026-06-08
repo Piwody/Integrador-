@@ -3,3 +3,4 @@ sqlmodel
 bcrypt
 python-dotenv
 PyJWT
+pycryptodome
