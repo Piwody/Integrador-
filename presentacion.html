@@ -1,0 +1,757 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Gestor de Imágenes — Proyecto Integrador</title>
+<link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=VT323&display=swap" rel="stylesheet">
+<style>
+:root{
+  --win:#C0C0C0;       /* gris ventana */
+  --face:#C0C0C0;
+  --hi:#FFFFFF;        /* bisel claro */
+  --sh:#808080;        /* bisel sombra */
+  --dk:#000000;        /* bisel negro exterior */
+  --title:#000080;     /* azul barra título */
+  --title2:#1084d0;    /* azul degradado clásico */
+  --desk:#008080;      /* teal escritorio */
+  --text:#000000;
+  --paper:#FFFFFF;
+  --red:#D00000;
+  --green:#008000;
+  --yellow:#FFD800;
+  --purple:#7B00A8;
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{
+  background:var(--desk);
+  background-image:
+    repeating-linear-gradient(0deg, rgba(0,0,0,0.04) 0 2px, transparent 2px 4px);
+  color:var(--text);
+  font-family:'VT323', monospace;
+  font-size:21px;
+  line-height:1.5;
+  padding:0 0 60px;
+}
+
+/* ===== Pixel font helper ===== */
+.pixel{font-family:'Press Start 2P', monospace;}
+
+/* ===== TASKBAR (top nav) ===== */
+.taskbar{
+  position:fixed; top:0; left:0; right:0; z-index:200;
+  background:var(--face);
+  border-bottom:2px solid var(--dk);
+  box-shadow:inset 1px 1px 0 var(--hi), inset -1px -1px 0 var(--sh);
+  display:flex; align-items:center; gap:6px;
+  padding:5px 8px;
+  flex-wrap:wrap;
+}
+.start-btn{
+  font-family:'Press Start 2P', monospace;
+  font-size:11px;
+  background:var(--face);
+  border:2px solid var(--dk);
+  box-shadow:inset 1px 1px 0 var(--hi), inset -1px -1px 0 var(--sh);
+  padding:7px 12px;
+  display:flex; align-items:center; gap:7px;
+  color:var(--text);
+}
+.start-btn::before{content:'🪟'; font-size:14px;}
+.taskbar a{
+  font-family:'VT323',monospace;
+  font-size:19px;
+  color:var(--text);
+  text-decoration:none;
+  padding:5px 11px;
+  border:2px solid transparent;
+}
+.taskbar a:hover{
+  border:2px solid var(--dk);
+  box-shadow:inset 1px 1px 0 var(--hi), inset -1px -1px 0 var(--sh);
+  background:#d4d0c8;
+}
+.task-spacer{flex:1;}
+.task-clock{
+  font-size:18px;
+  border:2px solid var(--sh);
+  box-shadow:inset 1px 1px 0 var(--sh), inset -1px -1px 0 var(--hi);
+  padding:5px 12px;
+  background:var(--face);
+}
+
+/* ===== WINDOW ===== */
+.window{
+  max-width:1000px;
+  margin:36px auto;
+  background:var(--face);
+  border:2px solid var(--dk);
+  box-shadow:inset 1px 1px 0 var(--hi), inset -1px -1px 0 var(--sh), 4px 4px 0 rgba(0,0,0,0.35);
+}
+.window:first-of-type{margin-top:90px;}
+.title-bar{
+  background:var(--title);
+  background:linear-gradient(90deg, var(--title) 0%, var(--title2) 100%);
+  color:#fff;
+  display:flex; align-items:center; justify-content:space-between;
+  padding:5px 6px;
+}
+.title-bar .tb-left{display:flex; align-items:center; gap:8px;}
+.title-bar .tb-ico{font-size:17px;}
+.title-bar .tb-name{font-family:'Press Start 2P',monospace; font-size:11px; letter-spacing:0.5px;}
+.tb-btns{display:flex; gap:3px;}
+.tb-btns span{
+  width:22px; height:20px;
+  background:var(--face);
+  border:2px solid var(--dk);
+  box-shadow:inset 1px 1px 0 var(--hi), inset -1px -1px 0 var(--sh);
+  display:flex; align-items:center; justify-content:center;
+  font-family:'Press Start 2P',monospace; font-size:9px; color:#000;
+}
+.win-body{padding:26px 28px;}
+
+/* menu bar inside window */
+.menu-bar{
+  background:var(--face);
+  border-bottom:1px solid var(--sh);
+  display:flex; gap:2px; padding:3px 8px;
+  font-size:18px;
+}
+.menu-bar span{padding:2px 9px;}
+.menu-bar span u{text-decoration:underline;}
+
+/* ===== HERO / DESKTOP ===== */
+.hero{
+  max-width:1000px; margin:90px auto 36px;
+  background:var(--face);
+  border:2px solid var(--dk);
+  box-shadow:inset 1px 1px 0 var(--hi), inset -1px -1px 0 var(--sh), 5px 5px 0 rgba(0,0,0,0.4);
+}
+.hero-screen{
+  background:var(--desk);
+  margin:8px;
+  border:2px solid var(--sh);
+  box-shadow:inset 1px 1px 0 var(--sh), inset -1px -1px 0 var(--hi);
+  padding:54px 40px;
+  text-align:center;
+}
+.hero h1{
+  font-family:'Press Start 2P',monospace;
+  font-size:clamp(22px,4.4vw,40px);
+  color:#fff;
+  line-height:1.5;
+  text-shadow:3px 3px 0 #000, 4px 4px 0 var(--title);
+  margin-bottom:26px;
+}
+.hero h1 .y{color:var(--yellow);}
+.hero-sub{
+  font-size:24px; color:#fff;
+  max-width:640px; margin:0 auto 30px; line-height:1.45;
+}
+.badge-row{display:flex; gap:10px; justify-content:center; flex-wrap:wrap; margin-bottom:26px;}
+.tag{
+  font-family:'Press Start 2P',monospace; font-size:10px;
+  padding:9px 13px; border:2px solid var(--dk); color:#000;
+  box-shadow:inset 1px 1px 0 rgba(255,255,255,0.6), inset -1px -1px 0 rgba(0,0,0,0.3), 2px 2px 0 rgba(0,0,0,0.4);
+}
+.tag.go{background:#5fd7ff;}
+.tag.py{background:var(--yellow);}
+.tag.sec{background:#ff8a8a;}
+.tag.dk{background:var(--face);}
+.tag.db{background:#9be89b;}
+.hero-meta{
+  display:inline-block;
+  background:#000; color:#0f0;
+  font-size:20px; padding:8px 18px;
+  border:2px solid var(--sh);
+  box-shadow:inset 1px 1px 0 var(--sh);
+}
+
+/* ===== HEADINGS ===== */
+h2.win-h{
+  font-family:'Press Start 2P',monospace;
+  font-size:17px; color:var(--title);
+  margin-bottom:18px; line-height:1.5;
+}
+.lead{font-size:22px; margin-bottom:22px; max-width:80ch;}
+
+/* ===== CARDS GRID ===== */
+.grid{display:grid; grid-template-columns:repeat(2,1fr); gap:18px;}
+.grid-3{display:grid; grid-template-columns:repeat(3,1fr); gap:16px;}
+.panel{
+  background:var(--paper);
+  border:2px solid var(--sh);
+  box-shadow:inset 1px 1px 0 var(--sh), inset -1px -1px 0 var(--hi);
+  padding:18px 20px;
+}
+.panel h3{font-family:'Press Start 2P',monospace; font-size:12px; margin-bottom:10px; line-height:1.5; color:#000;}
+.panel p{font-size:20px; line-height:1.45;}
+.panel .ico{font-size:26px; display:block; margin-bottom:8px;}
+
+/* yes/no chips */
+.chip{
+  display:inline-block; font-family:'Press Start 2P',monospace; font-size:9px;
+  padding:5px 9px; margin-bottom:10px; border:2px solid var(--dk);
+  box-shadow:2px 2px 0 rgba(0,0,0,0.35);
+}
+.chip.yes{background:#9be89b;}
+.chip.no{background:#ff8a8a;}
+
+/* ===== FLOW STRIP ===== */
+.flow{display:flex; gap:0; flex-wrap:wrap; border:2px solid var(--sh); box-shadow:inset 1px 1px 0 var(--sh), inset -1px -1px 0 var(--hi); background:var(--paper);}
+.flow .fstep{flex:1; min-width:150px; padding:16px 12px; text-align:center; border-right:2px dashed var(--sh);}
+.flow .fstep:last-child{border-right:none;}
+.flow .fn{font-family:'Press Start 2P',monospace; font-size:9px; color:var(--title); margin-bottom:8px;}
+.flow .ft{font-size:21px; font-weight:bold;}
+.flow .fs{font-size:17px; color:#444;}
+
+/* ===== CODE WINDOW ===== */
+.code-win{margin:20px 0; border:2px solid var(--dk); box-shadow:inset 1px 1px 0 var(--hi), inset -1px -1px 0 var(--sh);}
+.code-title{
+  background:var(--title); background:linear-gradient(90deg,var(--title),var(--title2));
+  color:#fff; padding:4px 8px; display:flex; align-items:center; justify-content:space-between;
+}
+.code-title .ct-name{font-family:'Press Start 2P',monospace; font-size:9px;}
+.code-title .ct-btns span{
+  display:inline-flex; width:18px; height:16px; margin-left:2px; background:var(--face);
+  border:2px solid var(--dk); box-shadow:inset 1px 1px 0 var(--hi), inset -1px -1px 0 var(--sh);
+  align-items:center; justify-content:center; font-family:'Press Start 2P',monospace; font-size:7px; color:#000;
+}
+.code-body{
+  background:#000; color:#e8e8e8;
+  font-family:'VT323',monospace; font-size:19px; line-height:1.5;
+  padding:16px 20px; overflow-x:auto; white-space:pre;
+}
+.code-body .k{color:#5fd7ff;}
+.code-body .s{color:#7CFC00;}
+.code-body .c{color:#9a9a9a;}
+.code-body .f{color:#FFD800;}
+.code-body .n{color:#ff8aa0;}
+.code-body .t{color:#d59bff;}
+
+/* ===== TABLE ===== */
+.tbl-wrap{overflow-x:auto; border:2px solid var(--sh); box-shadow:inset 1px 1px 0 var(--sh), inset -1px -1px 0 var(--hi); background:var(--paper);}
+table.win-tbl{width:100%; border-collapse:collapse; font-size:19px;}
+table.win-tbl th{
+  background:var(--title); color:#fff; text-align:left; padding:8px 12px;
+  font-family:'Press Start 2P',monospace; font-size:9px; line-height:1.6;
+  border-right:1px solid #5566cc;
+}
+table.win-tbl td{padding:8px 12px; border-bottom:1px solid #bbb; border-right:1px solid #ddd;}
+table.win-tbl tr:nth-child(even) td{background:#eef0f4;}
+.vbadge{display:inline-block; font-family:'Press Start 2P',monospace; font-size:9px; color:#fff; padding:4px 7px; border:1px solid #000;}
+.v10{background:var(--purple);} .v20{background:#1084d0;} .v30{background:var(--green);}
+.v40{background:var(--red);} .v50{background:#c79100;}
+
+/* ===== TOPOLOGY ===== */
+.topo{display:flex; flex-direction:column; align-items:center; gap:0; margin:8px 0 20px;}
+.node{
+  background:var(--paper); border:2px solid var(--dk);
+  box-shadow:inset 1px 1px 0 var(--hi), inset -1px -1px 0 var(--sh), 3px 3px 0 rgba(0,0,0,0.3);
+  padding:12px 22px; text-align:center; min-width:230px;
+}
+.node.sw{background:#cfe8ff;} .node.pi{background:#cdebcd;}
+.node .nl{font-family:'Press Start 2P',monospace; font-size:10px; margin-bottom:5px;}
+.node .ns{font-size:17px; color:#333;}
+.conn{font-size:18px; color:#fff; padding:7px 0; font-weight:bold;}
+.chip-proto{font-family:'Press Start 2P',monospace; font-size:8px; padding:4px 7px; border:1px solid #000; margin:0 3px;}
+.c-pagp{background:#d8c4ff;} .c-lacp{background:#bfe3ff;} .c-on{background:#ffd9a8;}
+.topo-mid{display:flex; gap:50px; justify-content:center; flex-wrap:wrap; width:100%;}
+.topo-branch{display:flex; flex-direction:column; align-items:center;}
+
+/* ROAS */
+.roas{display:flex; gap:18px; flex-wrap:wrap; margin-top:16px;}
+.roas .diagram{flex:1; min-width:240px; background:#cdebcd; border:2px solid var(--dk); box-shadow:inset 1px 1px 0 var(--hi), inset -1px -1px 0 var(--sh); padding:18px; text-align:center;}
+.roas .pi-box{background:var(--green); color:#fff; font-family:'Press Start 2P',monospace; font-size:10px; padding:11px; border:2px solid #000; box-shadow:3px 3px 0 rgba(0,0,0,0.3); margin:0 auto; max-width:230px; line-height:1.6;}
+.roas .arrow{font-size:18px; padding:7px 0; font-weight:bold;}
+.subifs{display:flex; flex-wrap:wrap; gap:7px; justify-content:center;}
+.subif{font-family:'VT323',monospace; font-size:17px; color:#fff; padding:5px 10px; border:1px solid #000;}
+.roas .why{flex:1.4; min-width:240px; background:var(--paper); border:2px solid var(--sh); box-shadow:inset 1px 1px 0 var(--sh), inset -1px -1px 0 var(--hi); padding:18px 20px;}
+.roas .why p{font-size:20px; margin-bottom:10px; line-height:1.45;}
+code{background:#000; color:#7CFC00; font-family:'VT323',monospace; font-size:18px; padding:1px 6px;}
+
+/* Zero trust */
+.zt{display:flex; gap:14px; flex-wrap:wrap; margin-top:14px;}
+.zt .ztc{flex:1; min-width:200px; background:#ff8a8a; border:2px solid var(--dk); box-shadow:inset 1px 1px 0 rgba(255,255,255,0.5), inset -1px -1px 0 rgba(0,0,0,0.3), 2px 2px 0 rgba(0,0,0,0.35); padding:16px; text-align:center;}
+.zt .ztc.ok{background:#9be89b;}
+.zt .ztc .zh{font-family:'Press Start 2P',monospace; font-size:10px; margin:6px 0 8px;}
+.zt .ztc p{font-size:18px; line-height:1.4;}
+.zt .ztc .zi{font-size:26px;}
+
+/* callout */
+.callout{
+  background:var(--yellow);
+  border:2px solid var(--dk);
+  box-shadow:inset 1px 1px 0 rgba(255,255,255,0.6), inset -1px -1px 0 rgba(0,0,0,0.3), 3px 3px 0 rgba(0,0,0,0.35);
+  padding:16px 20px; margin-top:18px; font-size:20px; line-height:1.5;
+}
+.callout b{font-family:'Press Start 2P',monospace; font-size:10px; display:inline-block; margin-right:6px;}
+
+/* security icons grid */
+.sec-grid{display:grid; grid-template-columns:repeat(3,1fr); gap:16px;}
+.sec{background:var(--paper); border:2px solid var(--sh); box-shadow:inset 1px 1px 0 var(--sh), inset -1px -1px 0 var(--hi); padding:18px; text-align:center;}
+.sec .si{font-size:30px; margin-bottom:8px;}
+.sec h4{font-family:'Press Start 2P',monospace; font-size:11px; color:var(--red); margin-bottom:8px; line-height:1.5;}
+.sec p{font-size:19px; line-height:1.4;}
+
+/* arch boxes */
+.arch{display:flex; flex-direction:column; gap:14px; align-items:center;}
+.arch-row{display:flex; gap:16px; align-items:center; justify-content:center; flex-wrap:wrap;}
+.abox{background:var(--paper); border:2px solid var(--dk); box-shadow:inset 1px 1px 0 var(--hi), inset -1px -1px 0 var(--sh), 3px 3px 0 rgba(0,0,0,0.3); padding:12px 18px; text-align:center; min-width:150px;}
+.abox.py{background:var(--yellow);} .abox.go{background:#cfe8ff;} .abox.db{background:#cdebcd;}
+.abox .at{font-family:'Press Start 2P',monospace; font-size:8px; margin-bottom:5px;}
+.abox .an{font-size:21px; font-weight:bold;}
+.abox .ass{font-size:16px; color:#444;}
+.aarrow{font-family:'VT323',monospace; font-size:18px; color:#fff; text-align:center;}
+
+/* file tree */
+.tree{background:#000; color:#e8e8e8; font-family:'VT323',monospace; font-size:19px; line-height:1.6; padding:14px 18px; border:2px solid var(--sh); box-shadow:inset 1px 1px 0 var(--sh);}
+.tree .d{color:#5fd7ff;} .tree .h{color:#FFD800;} .tree .x{color:#9a9a9a;}
+
+/* feature list */
+.fl{list-style:none;}
+.fl li{display:flex; gap:9px; padding:8px 0; border-bottom:1px dashed #999; font-size:20px; line-height:1.4;}
+.fl li:last-child{border-bottom:none;}
+.fl li b{font-family:'VT323',monospace;}
+
+/* steps */
+.step{display:grid; grid-template-columns:54px 1fr; gap:18px; margin-bottom:22px; align-items:start;}
+.step .sn{width:54px; height:54px; background:var(--title); color:#fff; font-family:'Press Start 2P',monospace; font-size:16px; display:flex; align-items:center; justify-content:center; border:2px solid var(--dk); box-shadow:inset 1px 1px 0 rgba(255,255,255,0.3), 3px 3px 0 rgba(0,0,0,0.3);}
+.step h3{font-family:'Press Start 2P',monospace; font-size:12px; color:var(--title); margin-bottom:6px;}
+.step p{font-size:20px; margin-bottom:10px; line-height:1.45;}
+
+/* footer window */
+.footer{max-width:1000px; margin:36px auto 0; text-align:center;}
+.footer .fwin{background:var(--face); border:2px solid var(--dk); box-shadow:inset 1px 1px 0 var(--hi), inset -1px -1px 0 var(--sh), 4px 4px 0 rgba(0,0,0,0.35); padding:0;}
+.footer .fbody{padding:30px;}
+.footer .pixel-title{font-family:'Press Start 2P',monospace; font-size:16px; color:var(--title); margin-bottom:12px; line-height:1.6;}
+.footer p{font-size:20px; margin-bottom:4px;}
+
+hr.bevel{border:none; border-top:2px solid var(--sh); border-bottom:2px solid var(--hi); margin:22px 0;}
+
+@media(max-width:760px){
+  .grid,.grid-3,.sec-grid{grid-template-columns:1fr;}
+  .taskbar a{display:none;}
+  .start-btn{font-size:9px;}
+  .code-body,.tree{font-size:16px;}
+}
+</style>
+</head>
+<body>
+
+<!-- TASKBAR -->
+<div class="taskbar">
+  <div class="start-btn">Inicio</div>
+  <a href="#que-es">¿Qué es?</a>
+  <a href="#alcance">Alcance</a>
+  <a href="#arq">Arquitectura</a>
+  <a href="#go">Go</a>
+  <a href="#codigo">Código</a>
+  <a href="#seg">Seguridad</a>
+  <a href="#red">Redes</a>
+  <a href="#run">Correrlo</a>
+  <div class="task-spacer"></div>
+  <div class="task-clock">🔊 2026</div>
+</div>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="title-bar">
+    <div class="tb-left"><span class="tb-ico">🖼️</span><span class="tb-name">Gestor de Imágenes.exe</span></div>
+    <div class="tb-btns"><span>_</span><span>□</span><span>×</span></div>
+  </div>
+  <div class="hero-screen">
+    <h1>GESTOR DE<br><span class="y">IMÁGENES</span></h1>
+    <p class="hero-sub">Sistema de microservicios seguro para subir y gestionar imágenes. Go + Python sobre Docker, desplegado en una red real con 5 VLANs.</p>
+    <div class="badge-row">
+      <span class="tag go">GO · GIN</span>
+      <span class="tag py">PYTHON · FASTAPI</span>
+      <span class="tag sec">JWT · BCRYPT · AES</span>
+      <span class="tag dk">DOCKER</span>
+      <span class="tag db">SQLITE</span>
+    </div>
+    <div class="hero-meta">C:\&gt; Proyecto Integrador · Ciberseguridad &amp; Programación 2026</div>
+  </div>
+</div>
+
+<!-- QUÉ ES -->
+<div class="window" id="que-es">
+  <div class="title-bar">
+    <div class="tb-left"><span class="tb-ico">📁</span><span class="tb-name">¿Qué es?</span></div>
+    <div class="tb-btns"><span>_</span><span>□</span><span>×</span></div>
+  </div>
+  <div class="menu-bar"><span><u>A</u>rchivo</span><span><u>E</u>ditar</span><span><u>V</u>er</span><span>A<u>y</u>uda</span></div>
+  <div class="win-body">
+    <h2 class="win-h">Dos servicios que trabajan juntos</h2>
+    <div class="grid">
+      <div class="panel"><span class="ico">🏗️</span><h3>Microservicios</h3><p>El sistema se divide en dos servicios independientes que se comunican por HTTP. Cada uno con una responsabilidad clara.</p></div>
+      <div class="panel"><span class="ico">🖼️</span><h3>Subida segura</h3><p>El usuario se registra, hace login y recibe un token. Con ese token sube imágenes. Sin token válido, el servidor lo rechaza.</p></div>
+      <div class="panel"><span class="ico">🔵🐍</span><h3>Go + Python</h3><p>Python (FastAPI) maneja usuarios y autenticación. Go (Gin) maneja recepción y almacenamiento de imágenes.</p></div>
+      <div class="panel"><span class="ico">🐳</span><h3>Docker Compose</h3><p>Ambos servicios corren en contenedores aislados. Un solo comando levanta todo sin instalar Go ni Python.</p></div>
+    </div>
+  </div>
+</div>
+
+<!-- ALCANCE -->
+<div class="window" id="alcance">
+  <div class="title-bar">
+    <div class="tb-left"><span class="tb-ico">🎯</span><span class="tb-name">Alcance del proyecto</span></div>
+    <div class="tb-btns"><span>_</span><span>□</span><span>×</span></div>
+  </div>
+  <div class="win-body">
+    <h2 class="win-h">Qué hace y qué no hace</h2>
+    <p class="lead">Acotar el alcance es parte del diseño: dejar claro qué queda fuera muestra decisiones deliberadas.</p>
+    <div class="grid-3">
+      <div class="panel"><span class="chip yes">SÍ HACE</span><h3>🔐 Autenticación</h3><p>Registro con contraseña hasheada, login con JWT firmado y verificación del token en cada petición protegida.</p></div>
+      <div class="panel"><span class="chip yes">SÍ HACE</span><h3>📤 Ingesta de imágenes</h3><p>Valida tipo y tamaño, genera nombre único y guarda en disco solo si el token es válido.</p></div>
+      <div class="panel"><span class="chip yes">SÍ HACE</span><h3>🤝 Comunicación</h3><p>Go consulta a Python en cada upload. Una sola fuente de verdad sobre la validez de los tokens.</p></div>
+      <div class="panel"><span class="chip no">NO HACE</span><h3>🖼️ Procesar imágenes</h3><p>No redimensiona, comprime ni aplica filtros. Solo ingesta y almacenamiento.</p></div>
+      <div class="panel"><span class="chip no">NO HACE</span><h3>🌐 Galería pública</h3><p>No sirve las imágenes de vuelta ni expone una galería navegable.</p></div>
+      <div class="panel"><span class="chip no">NO HACE</span><h3>👥 Roles finos</h3><p>No hay administradores ni niveles. Todo usuario autenticado tiene los mismos permisos. Base extensible.</p></div>
+    </div>
+  </div>
+</div>
+
+<!-- ARQUITECTURA -->
+<div class="window" id="arq">
+  <div class="title-bar">
+    <div class="tb-left"><span class="tb-ico">🗺️</span><span class="tb-name">Arquitectura</span></div>
+    <div class="tb-btns"><span>_</span><span>□</span><span>×</span></div>
+  </div>
+  <div class="win-body">
+    <h2 class="win-h">Cómo fluye la información</h2>
+    <div class="arch">
+      <div class="arch-row"><div class="abox"><div class="at">USUARIO</div><div class="an">🌐 Frontend</div><div class="ass">localhost:3000</div></div></div>
+      <div class="aarrow" style="color:#000;">⬇ POST /register · POST /login → JWT &nbsp;&nbsp;|&nbsp;&nbsp; POST /upload + Bearer ⬇</div>
+      <div class="arch-row">
+        <div class="abox py"><div class="at">🐍 PYTHON</div><div class="an">auth-service</div><div class="ass">FastAPI · :8081</div></div>
+        <div class="aarrow" style="color:#000;">⟵ GET /api/auth/verify ⟶</div>
+        <div class="abox go"><div class="at">🔵 GO</div><div class="an">image-service</div><div class="ass">Gin · :8082</div></div>
+      </div>
+      <div class="arch-row">
+        <div class="abox db"><div class="at">🗄️ BASE DE DATOS</div><div class="an">SQLite</div><div class="ass">usuarios</div></div>
+        <div class="abox db"><div class="at">📁 ARCHIVOS</div><div class="an">uploads/</div><div class="ass">imágenes</div></div>
+      </div>
+    </div>
+    <hr class="bevel">
+    <div class="flow">
+      <div class="fstep"><div class="fn">PASO 1</div><div class="ft">Registro</div><div class="fs">POST /register</div></div>
+      <div class="fstep"><div class="fn">PASO 2</div><div class="ft">Login</div><div class="fs">JWT generado</div></div>
+      <div class="fstep"><div class="fn">PASO 3</div><div class="ft">Request + token</div><div class="fs">Authorization: Bearer</div></div>
+      <div class="fstep"><div class="fn">PASO 4</div><div class="ft">Go ↔ Python</div><div class="fs">/api/auth/verify</div></div>
+      <div class="fstep"><div class="fn">PASO 5</div><div class="ft">Imagen guardada</div><div class="fs">201 Created</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- GO / SERVICIOS -->
+<div class="window" id="go">
+  <div class="title-bar">
+    <div class="tb-left"><span class="tb-ico">🔵</span><span class="tb-name">Los dos servicios</span></div>
+    <div class="tb-btns"><span>_</span><span>□</span><span>×</span></div>
+  </div>
+  <div class="win-body">
+    <h2 class="win-h">Python y Go, cada uno en su rol</h2>
+    <div class="grid">
+      <div class="panel">
+        <h3>🐍 auth-service · :8081</h3>
+        <div class="tree"><span class="d">auth-service/</span>
+  <span class="d">app/</span>
+    <span class="h">main.py</span> <span class="x">← endpoints</span>
+    <span class="d">core/</span>
+      <span class="h">seguridad.py</span> <span class="x">← JWT+bcrypt</span>
+      <span class="h">auth.py</span> <span class="x">← AES-CBC</span>
+    <span class="d">models/</span>
+      <span class="h">Usuario.py</span> <span class="x">← SQLite</span>
+  <span class="x">Dockerfile · requirements.txt</span></div>
+        <ul class="fl">
+          <li>📝 <span><b>POST /register</b> — crea usuario con contraseña hasheada</span></li>
+          <li>🔑 <span><b>POST /login</b> — verifica credenciales y devuelve JWT</span></li>
+          <li>✅ <span><b>GET /api/auth/verify</b> — valida token, lo llama Go</span></li>
+          <li>🔐 <span><b>bcrypt + pepper</b> — contraseñas irreversibles</span></li>
+        </ul>
+      </div>
+      <div class="panel">
+        <h3>🔵 image-service · :8082</h3>
+        <div class="tree"><span class="d">image-service/</span>
+  <span class="d">cmd/server/</span>
+    <span class="h">main.go</span> <span class="x">← servidor Gin</span>
+  <span class="d">internal/adapters/handler/</span>
+    <span class="h">image.go</span> <span class="x">← upload</span>
+  <span class="d">internal/middleware/</span>
+    <span class="h">auth.go</span> <span class="x">← valida JWT</span>
+  <span class="x">Dockerfile · go.mod</span></div>
+        <ul class="fl">
+          <li>📤 <span><b>POST /api/v1/images/upload</b> — endpoint principal</span></li>
+          <li>🛡️ <span><b>middleware/auth.go</b> — verifica el token con Python</span></li>
+          <li>🖼️ <span><b>Whitelist</b> — solo jpg, png, gif, webp</span></li>
+          <li>⚖️ <span><b>Límite 10 MB</b> · 🏗️ arquitectura hexagonal</span></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- CODIGO -->
+<div class="window" id="codigo">
+  <div class="title-bar">
+    <div class="tb-left"><span class="tb-ico">💻</span><span class="tb-name">Código fuente</span></div>
+    <div class="tb-btns"><span>_</span><span>□</span><span>×</span></div>
+  </div>
+  <div class="win-body">
+    <h2 class="win-h">Los archivos que importan</h2>
+
+    <div class="code-win">
+      <div class="code-title"><span class="ct-name">main.go</span><span class="ct-btns"><span>_</span><span>□</span><span>×</span></span></div>
+      <div class="code-body"><span class="k">func</span> <span class="f">main</span>() {
+    router := gin.<span class="f">Default</span>()
+    router.<span class="f">Use</span>(<span class="f">corsMiddleware</span>())            <span class="c">// acepta el frontend</span>
+
+    api := router.<span class="f">Group</span>(<span class="s">"/api/v1/images"</span>)
+    api.<span class="f">Use</span>(middleware.<span class="f">AuthRequired</span>())   <span class="c">// protegido por auth</span>
+    {
+        api.<span class="f">POST</span>(<span class="s">"/upload"</span>, handler.<span class="f">UploadImage</span>)
+    }
+
+    router.MaxMultipartMemory = <span class="n">10</span> &lt;&lt; <span class="n">20</span>      <span class="c">// 10 MB</span>
+    router.<span class="f">Run</span>(<span class="s">":8082"</span>)
+}</div>
+    </div>
+
+    <div class="code-win">
+      <div class="code-title"><span class="ct-name">handler/image.go</span><span class="ct-btns"><span>_</span><span>□</span><span>×</span></span></div>
+      <div class="code-body"><span class="k">var</span> permitidas = <span class="k">map</span>[<span class="t">string</span>]<span class="t">bool</span>{
+    <span class="s">".jpg"</span>: <span class="n">true</span>, <span class="s">".png"</span>: <span class="n">true</span>, <span class="s">".gif"</span>: <span class="n">true</span>, <span class="s">".webp"</span>: <span class="n">true</span>,
+}
+
+<span class="k">func</span> <span class="f">UploadImage</span>(c *gin.Context) {
+    file, err := c.<span class="f">FormFile</span>(<span class="s">"image"</span>)
+    <span class="k">if</span> err != <span class="n">nil</span> {
+        c.<span class="f">JSON</span>(<span class="n">400</span>, gin.H{<span class="s">"error"</span>: <span class="s">"archivo faltante"</span>}); <span class="k">return</span>
+    }
+    ext := strings.<span class="f">ToLower</span>(filepath.<span class="f">Ext</span>(file.Filename))
+    <span class="k">if</span> !permitidas[ext] {                       <span class="c">// whitelist, no blacklist</span>
+        c.<span class="f">JSON</span>(<span class="n">400</span>, gin.H{<span class="s">"error"</span>: <span class="s">"tipo no permitido"</span>}); <span class="k">return</span>
+    }
+    nombre := uuid.<span class="f">New</span>().<span class="f">String</span>() + ext        <span class="c">// evita colisiones / traversal</span>
+    c.<span class="f">SaveUploadedFile</span>(file, filepath.<span class="f">Join</span>(<span class="s">"uploads"</span>, nombre))
+    c.<span class="f">JSON</span>(<span class="n">201</span>, gin.H{<span class="s">"archivo"</span>: nombre})
+}</div>
+    </div>
+
+    <div class="code-win">
+      <div class="code-title"><span class="ct-name">middleware/auth.go</span><span class="ct-btns"><span>_</span><span>□</span><span>×</span></span></div>
+      <div class="code-body"><span class="c">// Intercepta CADA request antes del handler</span>
+<span class="k">func</span> <span class="f">AuthRequired</span>() gin.HandlerFunc {
+    <span class="k">return func</span>(c *gin.Context) {
+        token := c.<span class="f">GetHeader</span>(<span class="s">"Authorization"</span>)
+        <span class="k">if</span> token == <span class="s">""</span> {
+            c.<span class="f">AbortWithStatusJSON</span>(<span class="n">401</span>, gin.H{<span class="s">"error"</span>: <span class="s">"sin token"</span>}); <span class="k">return</span>
+        }
+        <span class="c">// No verifica local: le pregunta a Python (fuente de verdad)</span>
+        req, _ := http.<span class="f">NewRequest</span>(<span class="s">"GET"</span>, <span class="s">"http://auth-service:8081/api/auth/verify"</span>, <span class="n">nil</span>)
+        req.Header.<span class="f">Set</span>(<span class="s">"Authorization"</span>, token)
+        resp, err := http.<span class="f">DefaultClient</span>.<span class="f">Do</span>(req)
+        <span class="k">if</span> err != <span class="n">nil</span> || resp.StatusCode != <span class="n">200</span> {
+            c.<span class="f">AbortWithStatusJSON</span>(<span class="n">401</span>, gin.H{<span class="s">"error"</span>: <span class="s">"token inválido"</span>}); <span class="k">return</span>
+        }
+        c.<span class="f">Next</span>()
+    }
+}</div>
+    </div>
+
+    <div class="code-win">
+      <div class="code-title"><span class="ct-name">core/seguridad.py — bcrypt + pepper</span><span class="ct-btns"><span>_</span><span>□</span><span>×</span></span></div>
+      <div class="code-body"><span class="k">import</span> bcrypt, os
+PEPPER = os.<span class="f">getenv</span>(<span class="s">"PEPPER"</span>).<span class="f">encode</span>()   <span class="c"># secreto fuera de la BD</span>
+
+<span class="k">def</span> <span class="f">hash_password</span>(password: <span class="t">str</span>) -> <span class="t">str</span>:
+    mezcla = password.<span class="f">encode</span>() + PEPPER     <span class="c"># pepper + salt + cost lento</span>
+    <span class="k">return</span> bcrypt.<span class="f">hashpw</span>(mezcla, bcrypt.<span class="f">gensalt</span>(rounds=<span class="n">12</span>)).<span class="f">decode</span>()
+
+<span class="k">def</span> <span class="f">verify_password</span>(password: <span class="t">str</span>, hashed: <span class="t">str</span>) -> <span class="t">bool</span>:
+    <span class="k">return</span> bcrypt.<span class="f">checkpw</span>(password.<span class="f">encode</span>() + PEPPER, hashed.<span class="f">encode</span>())</div>
+    </div>
+
+    <div class="code-win">
+      <div class="code-title"><span class="ct-name">main.py — JWT</span><span class="ct-btns"><span>_</span><span>□</span><span>×</span></span></div>
+      <div class="code-body"><span class="nd">@app.post</span>(<span class="s">"/login"</span>)
+<span class="k">def</span> <span class="f">login</span>(datos: LoginInput):
+    user = <span class="f">get_user</span>(datos.username)
+    <span class="k">if not</span> user <span class="k">or not</span> <span class="f">verify_password</span>(datos.password, user.hashed):
+        <span class="k">raise</span> <span class="f">HTTPException</span>(<span class="n">401</span>, <span class="s">"credenciales inválidas"</span>)
+    payload = {<span class="s">"sub"</span>: user.username,
+               <span class="s">"exp"</span>: datetime.<span class="f">utcnow</span>() + <span class="f">timedelta</span>(minutes=<span class="n">30</span>)}  <span class="c"># expira 30 min</span>
+    <span class="k">return</span> {<span class="s">"access_token"</span>: jwt.<span class="f">encode</span>(payload, SECRET, algorithm=<span class="s">"HS256"</span>)}
+
+<span class="nd">@app.get</span>(<span class="s">"/api/auth/verify"</span>)
+<span class="k">def</span> <span class="f">verify</span>(authorization: <span class="t">str</span> = <span class="f">Header</span>(<span class="n">None</span>)):
+    <span class="k">try</span>:
+        jwt.<span class="f">decode</span>(authorization.<span class="f">replace</span>(<span class="s">"Bearer "</span>, <span class="s">""</span>), SECRET, algorithms=[<span class="s">"HS256"</span>])
+        <span class="k">return</span> {<span class="s">"valid"</span>: <span class="n">True</span>}
+    <span class="k">except</span> jwt.PyJWTError:
+        <span class="k">raise</span> <span class="f">HTTPException</span>(<span class="n">401</span>, <span class="s">"token inválido o expirado"</span>)</div>
+    </div>
+
+    <div class="code-win">
+      <div class="code-title"><span class="ct-name">core/auth.py — cifrado AES-CBC</span><span class="ct-btns"><span>_</span><span>□</span><span>×</span></span></div>
+      <div class="code-body"><span class="k">from</span> Crypto.Cipher <span class="k">import</span> AES
+<span class="k">from</span> Crypto.Util.Padding <span class="k">import</span> pad, unpad
+<span class="k">import</span> os, base64
+KEY = os.<span class="f">getenv</span>(<span class="s">"AES_KEY"</span>).<span class="f">encode</span>()       <span class="c"># 32 bytes = AES-256</span>
+
+<span class="k">def</span> <span class="f">encrypt</span>(texto: <span class="t">str</span>) -> <span class="t">str</span>:
+    iv = os.<span class="f">urandom</span>(<span class="n">16</span>)                   <span class="c"># IV aleatorio por cada cifrado</span>
+    cipher = AES.<span class="f">new</span>(KEY, AES.MODE_CBC, iv)
+    ct = cipher.<span class="f">encrypt</span>(<span class="f">pad</span>(texto.<span class="f">encode</span>(), AES.block_size))  <span class="c"># padding</span>
+    <span class="k">return</span> base64.<span class="f">b64encode</span>(iv + ct).<span class="f">decode</span>()    <span class="c"># IV viaja con el cifrado</span>
+
+<span class="k">def</span> <span class="f">decrypt</span>(token: <span class="t">str</span>) -> <span class="t">str</span>:
+    raw = base64.<span class="f">b64decode</span>(token)
+    iv, ct = raw[:<span class="n">16</span>], raw[<span class="n">16</span>:]        <span class="c"># separa IV del cifrado</span>
+    cipher = AES.<span class="f">new</span>(KEY, AES.MODE_CBC, iv)
+    <span class="k">return</span> <span class="f">unpad</span>(cipher.<span class="f">decrypt</span>(ct), AES.block_size).<span class="f">decode</span>()</div>
+    </div>
+  </div>
+</div>
+
+<!-- SEGURIDAD -->
+<div class="window" id="seg">
+  <div class="title-bar">
+    <div class="tb-left"><span class="tb-ico">🔐</span><span class="tb-name">Ciberseguridad</span></div>
+    <div class="tb-btns"><span>_</span><span>□</span><span>×</span></div>
+  </div>
+  <div class="win-body">
+    <h2 class="win-h">Capas de seguridad implementadas</h2>
+    <div class="sec-grid">
+      <div class="sec"><div class="si">🔐</div><h4>bcrypt + pepper</h4><p>Contraseñas hasheadas con bcrypt más un secreto pepper. Aunque roben la BD, no recuperan las contraseñas.</p></div>
+      <div class="sec"><div class="si">🎫</div><h4>JWT + expiración</h4><p>Token JSON firmado que expira en 30 min. Sin token válido: 401 Unauthorized.</p></div>
+      <div class="sec"><div class="si">🤝</div><h4>Verificación entre servicios</h4><p>Go no verifica solo: pregunta a Python en cada request vía /api/auth/verify.</p></div>
+      <div class="sec"><div class="si">🔒</div><h4>AES-CBC</h4><p>Cifrado simétrico de datos con IV aleatorio por operación y padding de bloque. Sin patrones repetidos.</p></div>
+      <div class="sec"><div class="si">📁</div><h4>Validación de archivos</h4><p>Whitelist: solo jpg, png, gif, webp. Máximo 10 MB. Los .exe/.php se rechazan antes del disco.</p></div>
+      <div class="sec"><div class="si">🔑</div><h4>Variables de entorno</h4><p>JWT_SECRET, PEPPER y AES_KEY se inyectan por entorno en docker-compose, nunca hardcodeados.</p></div>
+    </div>
+    <div class="callout"><b>DEFENSA EN CAPAS</b> Ninguna capa sola es perfecta. Apiladas — hash, JWT, verificación entre servicios, validación, cifrado y CORS — hacen el sistema difícil de romper. Mismo principio que el Zero Trust de la red.</div>
+  </div>
+</div>
+
+<!-- REDES -->
+<div class="window" id="red">
+  <div class="title-bar">
+    <div class="tb-left"><span class="tb-ico">🌐</span><span class="tb-name">Infraestructura de Red</span></div>
+    <div class="tb-btns"><span>_</span><span>□</span><span>×</span></div>
+  </div>
+  <div class="win-body">
+    <h2 class="win-h">La red física detrás del proyecto</h2>
+    <p class="lead">Desplegado sobre una red real: 5 VLANs, cuatro switches con EtherChannel y una Raspberry Pi como router. Cada decisión tiene una razón técnica.</p>
+
+    <h2 class="win-h" style="font-size:13px;">🗺️ Segmentación con VLANs + VLSM</h2>
+    <div class="tbl-wrap">
+      <table class="win-tbl">
+        <thead><tr><th>VLAN</th><th>Grupo</th><th>Subred</th><th>Gateway</th><th>Hosts</th><th>Servidor</th></tr></thead>
+        <tbody>
+          <tr><td><span class="vbadge v10">10</span></td><td>Microservicios</td><td>192.168.0.128/27</td><td>.129</td><td>30</td><td>auth-service + image-service</td></tr>
+          <tr><td><span class="vbadge v20">20</span></td><td>Streaming</td><td>192.168.0.64/26</td><td>.65</td><td>62</td><td>Streaming Server — VLC</td></tr>
+          <tr><td><span class="vbadge v30">30</span></td><td>Mail</td><td>192.168.0.0/26</td><td>.1</td><td>62</td><td>Mail Server — SMTP + SQLite</td></tr>
+          <tr><td><span class="vbadge v40">40</span></td><td>Gaming</td><td>192.168.0.160/27</td><td>.161</td><td>30</td><td>Counter Strike Server</td></tr>
+          <tr><td><span class="vbadge v50">50</span></td><td>Invitados</td><td>192.168.0.192/27</td><td>.193</td><td>30</td><td>WiFi visitantes — solo internet</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="callout"><b>¿POR QUÉ?</b> Sin VLANs, un equipo en gaming podría atacar al mail server. Las VLANs crean fronteras lógicas: aunque compartan switch físico, el tráfico está aislado. 802.1Q etiqueta cada frame con su VLAN.</div>
+
+    <hr class="bevel">
+    <h2 class="win-h" style="font-size:13px;">⚡ Topología EtherChannel — 4 switches</h2>
+    <div class="topo">
+      <div class="node sw"><div class="nl">SW0 — Core</div><div class="ns">Fa0/3–Fa0/4 → SW1 · Fa0/5–Fa0/6 → SW2</div></div>
+      <div class="conn" style="color:#000;">│ <span class="chip-proto c-pagp">PAgP desirable</span> │</div>
+      <div class="topo-mid">
+        <div class="topo-branch">
+          <div class="node sw"><div class="nl">SW1 — Access</div><div class="ns">→ SW0 (PAgP) · → SW3 (LACP)</div></div>
+          <div class="conn" style="color:#000;">│ <span class="chip-proto c-lacp">LACP active</span> │</div>
+        </div>
+        <div class="topo-branch">
+          <div class="conn" style="color:#000;">│ <span class="chip-proto c-pagp">PAgP desirable</span> │</div>
+          <div class="node sw"><div class="nl">SW2 — Access</div><div class="ns">→ SW0 (PAgP) · → SW3 (ON)</div></div>
+          <div class="conn" style="color:#000;">│ <span class="chip-proto c-on">ON estático</span> │</div>
+        </div>
+      </div>
+      <div class="node sw" style="margin-top:4px;"><div class="nl">SW3 — Access</div><div class="ns">→ SW1 (LACP) · → SW2 (ON)</div></div>
+    </div>
+    <div class="grid-3">
+      <div class="panel"><span class="ico">🟣</span><h3>PAgP</h3><p>Propietario de Cisco, modo <code>desirable</code>. Solo entre switches Cisco → enlaces del core.</p></div>
+      <div class="panel"><span class="ico">🔵</span><h3>LACP</h3><p>Estándar IEEE 802.3ad, multi-vendor. Modo <code>active</code>. Más robusto para entornos mixtos.</p></div>
+      <div class="panel"><span class="ico">🟠</span><h3>ON</h3><p>Sin negociación: ambos lados fuerzan el canal. Simple, pero sin detección de errores.</p></div>
+    </div>
+
+    <hr class="bevel">
+    <h2 class="win-h" style="font-size:13px;">🍓 Router-on-a-Stick con Raspberry Pi</h2>
+    <div class="roas">
+      <div class="diagram">
+        <div class="pi-box">🍓 Raspberry Pi<br>eth0 — trunk 802.1Q</div>
+        <div class="arrow" style="color:#000;">⬇ un solo cable físico ⬇</div>
+        <div class="subifs">
+          <span class="subif" style="background:var(--purple);">eth0.10 .129</span>
+          <span class="subif" style="background:#1084d0;">eth0.20 .65</span>
+          <span class="subif" style="background:var(--green);">eth0.30 .1</span>
+          <span class="subif" style="background:var(--red);">eth0.40 .161</span>
+          <span class="subif" style="background:#c79100;">eth0.50 .193</span>
+        </div>
+        <div class="arrow" style="color:#000;">⬇</div>
+        <div class="pi-box" style="background:#1084d0;">SW0 Core Switch<br>puerto trunk → Pi</div>
+      </div>
+      <div class="why">
+        <p>En vez de una interfaz física por VLAN (5 puertos), usamos <b>un solo puerto físico</b> y 5 subinterfaces lógicas por software. Eficiente y escalable.</p>
+        <p>Cuando un equipo de la VLAN 20 quiere hablar con la VLAN 10, el frame sube por el trunk a la Pi, la Pi enruta, y baja a la VLAN destino — todo por el mismo cable.</p>
+        <p>La Pi también hace <code>NAT masquerade</code>: traduce las IPs privadas a su IP pública para dar salida a internet.</p>
+      </div>
+    </div>
+
+    <hr class="bevel">
+    <h2 class="win-h" style="font-size:13px;">🔒 Zero Trust — Firewall entre VLANs</h2>
+    <p class="lead">Por defecto, todo el tráfico inter-VLAN está bloqueado. Solo cruzan los flujos permitidos explícitamente.</p>
+    <div class="zt">
+      <div class="ztc ok"><div class="zi">✅</div><div class="zh">VLAN 20 → 10</div><p>Streaming accede al auth-service (:8081) para autenticarse. Solo ese puerto.</p></div>
+      <div class="ztc ok"><div class="zi">✅</div><div class="zh">VLAN 30 → 10</div><p>Mail consulta el auth-service para verificar usuarios. SMTP queda en VLAN 30.</p></div>
+      <div class="ztc"><div class="zi">🚫</div><div class="zh">VLAN 40 → todo</div><p>El CS Server está aislado. No habla con otros servidores, solo WAN.</p></div>
+      <div class="ztc"><div class="zi">🚫</div><div class="zh">VLAN 50 → servidores</div><p>Invitados tienen internet (NAT) pero cero acceso a servidores.</p></div>
+    </div>
+    <div class="callout"><b>ZERO TRUST</b> Si comprometen el CS Server o un invitado, no hay movimiento lateral hacia el mail server ni los microservicios. Cada segmento confía en cero — igual que el middleware que verifica el JWT en cada request.</div>
+  </div>
+</div>
+
+<!-- RUN -->
+<div class="window" id="run">
+  <div class="title-bar">
+    <div class="tb-left"><span class="tb-ico">🚀</span><span class="tb-name">Cómo correrlo</span></div>
+    <div class="tb-btns"><span>_</span><span>□</span><span>×</span></div>
+  </div>
+  <div class="win-body">
+    <h2 class="win-h">De cero a funcionando en 5 pasos</h2>
+    <div class="step"><div class="sn">1</div><div><h3>Requisitos</h3><p>Solo Docker Desktop y Git. Docker construye todo; no necesitas Go ni Python en tu máquina.</p><div class="code-body" style="border:2px solid var(--sh);"><span class="c"># verifica docker</span>
+<span class="k">docker --version</span></div></div></div>
+    <div class="step"><div class="sn">2</div><div><h3>Clona el repositorio</h3><div class="code-body" style="border:2px solid var(--sh);"><span class="k">git clone https://github.com/Piwody/Integrador-.git</span>
+<span class="k">cd Integrador-</span></div></div></div>
+    <div class="step"><div class="sn">3</div><div><h3>Levanta los servicios</h3><p>Un comando construye Go y Python y los inicia.</p><div class="code-body" style="border:2px solid var(--sh);"><span class="k">docker-compose up --build</span>
+<span class="s">✔ auth-service Started · image-service Started</span></div></div></div>
+    <div class="step"><div class="sn">4</div><div><h3>Sirve el frontend</h3><p>En una segunda terminal, para evitar bloqueos de CORS.</p><div class="code-body" style="border:2px solid var(--sh);"><span class="k">python -m http.server 3000</span>
+<span class="f">http://localhost:3000/index.html</span></div></div></div>
+    <div class="step"><div class="sn">5</div><div><h3>Usa el sistema</h3><p>Regístrate, inicia sesión y sube tu imagen. Para detener: <code>docker-compose down</code></p></div></div>
+  </div>
+</div>
+
+<!-- FOOTER -->
+<div class="footer">
+  <div class="fwin">
+    <div class="title-bar"><div class="tb-left"><span class="tb-ico">🖼️</span><span class="tb-name">Acerca de</span></div><div class="tb-btns"><span>×</span></div></div>
+    <div class="fbody">
+      <div class="pixel-title">GESTOR DE IMÁGENES</div>
+      <p>Proyecto Integrador · Ciberseguridad &amp; Programación · 2026</p>
+      <p style="color:#444;">Go · Python · Docker · JWT · bcrypt · AES-CBC · SQLite · Gin · FastAPI</p>
+    </div>
+  </div>
+</div>
+
+</body>
+</html>

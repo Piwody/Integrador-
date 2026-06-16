@@ -4,7 +4,7 @@ services:
       context: ./auth-service
       dockerfile: Dockerfile
     ports:
-      - "8081:8000"
+      - "0.0.0.0:8081:8000"
     env_file:
       - .env
     environment:
@@ -17,7 +17,7 @@ services:
       context: ./image-service
       dockerfile: Dockerfile
     ports:
-      - "8082:5000"
+      - "0.0.0.0:8082:5000"
     volumes:
       - image_data:/root/uploads
     depends_on:
